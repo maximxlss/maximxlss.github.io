@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#141a23"><title>Foldtop 1999 — hinge-aware tiny computer</title>
+<meta name="theme-color" content="#141a23"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><title>Foldtop 1999 — hinge-aware tiny computer</title>
 <style>
 :root{--ink:#282a29;--panel:#d1cab3;--light:#fff9e8;--dark:#514b41;--screen:#047e7b;--task:#bfb8a4;--line:#45483d;--title:#234c7a;--title-ink:#fff;--key:#e9e3d3;--key-shadow:#ada493;--accent:#f5b64b;--kbdink:#33322d;--bg:#262d2e;--glow:rgba(24,249,224,.09);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none}body{background:radial-gradient(circle at 50% 70%,#414a4c,#11191d 73%);color:var(--ink);touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -96,15 +96,52 @@ body[data-posture="folded"] #desk{box-shadow:0 0 29px var(--glow) inset,0 0 12px
 @media (max-width:460px){#base-info button{font-size:9px;padding:3px 4px}#posture-chip{font-size:8px}#bezel{letter-spacing:0}}
 @media (prefers-reduced-motion:reduce){#lid-overlay{transition:none}}
 
+
+/* v3: keep the desktop in landscape and turn the upper panel into a real lid. */
+#top{padding-bottom:0 !important;background:linear-gradient(105deg,var(--light),var(--panel) 9%,var(--panel) 91%,var(--dark));}
+#bezel{flex-shrink:0}
+#desk{border-bottom-width:2px;}
+#lid-chin{height:19px;min-height:19px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;padding:1px 10px;background:linear-gradient(180deg,var(--panel) 0%,color-mix(in srgb,var(--panel),black 15%) 65%,var(--dark) 100%);border-top:1px solid var(--light);border-bottom:2px solid #252d2d;color:var(--ink);font-size:9px;letter-spacing:1.6px;line-height:1;position:relative;white-space:nowrap}
+#lid-chin .grille{font-size:8px;opacity:.55;letter-spacing:3px;overflow:hidden}
+#lid-chin .badge{font-weight:900;letter-spacing:2px;text-align:center;opacity:.86}
+#lid-chin .cam{font-size:9px;color:var(--accent);white-space:nowrap}
+#hinge{background:linear-gradient(180deg,#171d21 0%,#616b70 24%,#20282c 46%,#6f7573 77%,#10171c 100%) !important;border-top:1px solid #0e1516;border-bottom:1px solid #101819;z-index:42}
+#hinge::after{content:"";position:absolute;left:10%;right:10%;top:18%;height:60%;border-radius:12px;background:repeating-linear-gradient(90deg,#626e73 0 16%,#181e21 16% 20%,#626e73 20% 36%,#171b20 36% 40%);opacity:.85;line-height:normal}
+body[data-posture="folded"] #lid-chin,body[data-zones="hardware"] #lid-chin{height:23px;min-height:23px;box-shadow:inset 0 2px 3px #fff5,inset 0 -3px 5px #0003}
+body[data-zones="hardware"] #top{border-bottom:0 !important}
+body[data-zones="hardware"] #base{border-top:0 !important}
+body[data-zones="hardware"] #hinge{box-shadow:0 0 5px #151a1b88 !important}
+body[data-layout="book"] #lid-chin{height:100%;width:18px;min-width:18px;display:flex;flex-direction:column;justify-content:center;padding:3px 1px;writing-mode:vertical-rl;border-top:0;border-left:1px solid var(--light);border-bottom:0;border-right:2px solid #252d2d;gap:9px}
+body[data-layout="book"] #lid-chin .grille{display:none}
+body[data-layout="book"] #lid-chin .cam{display:none}
+body[data-layout="book"] #top{flex-direction:row;flex-wrap:wrap;align-content:start}
+body[data-layout="book"] #bezel{width:100%}
+body[data-layout="book"] #desk{width:calc(100% - 18px);height:calc(100% - 20px);flex:1}
+body[data-layout="book"] #lid-chin{height:calc(100% - 20px) !important}
+/* Whole mini-computer rotates into landscape if orientation.lock is unavailable. */
+body[data-ui-rotated="yes"] #world{position:fixed;top:0;left:0;width:100dvh;height:100vw;max-height:none;transform-origin:0 0;transform:translateX(100vw) rotate(90deg);padding:0;}
+#closed-cover{position:absolute;inset:0;z-index:140;display:none;flex-direction:column;justify-content:center;align-items:center;gap:16px;text-align:center;padding:clamp(12px,5vw,48px);background:radial-gradient(ellipse at 35% 20%,#9b9f9d,#5b6b70 40%,#161c25 82%);color:#e2e4d8;font-family:ui-monospace,monospace}
+#closed-cover.show{display:flex}
+#closed-cover .cover-lid{width:min(94%,600px);height:min(68%,390px);border:7px ridge #636d72;border-radius:20px 20px 27px 27px;background:linear-gradient(128deg,#7e8586,#c0bcb0 20%,#9e9f99 48%,#5d686c 89%);box-shadow:8px 15px 26px #0009,inset 0 0 0 2px #d2cfc1,inset 0 1px 19px #f3eac6ad;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:8px;color:#273039;transform:perspective(900px) rotateX(3deg)}
+#closed-cover .cover-lid strong{font-size:clamp(22px,6vw,65px);letter-spacing:.2em;text-shadow:1px 1px #fff8}
+#closed-cover .cover-lid span{font-size:clamp(9px,1.4vw,13px);letter-spacing:4px}
+#closed-cover button{padding:10px 18px;font-weight:bold;background:#ffdb85;color:#1f2934;border:2px solid #fbf0dc;box-shadow:3px 4px #0007}
+#closed-cover p{font-size:11px;opacity:.76;line-height:1.5;max-width:420px;margin:0}
+#immersive-hint{position:fixed;z-index:150;top:8px;left:50%;transform:translateX(-50%);padding:8px 15px;border-radius:7px;color:#141b21;background:#ffe3a0;box-shadow:0 5px 22px #000b;font:700 12px system-ui;pointer-events:none;opacity:0;transition:opacity .2s;text-align:center;max-width:90vw}
+#immersive-hint.show{opacity:1}
+body[data-ui-rotated="yes"] #immersive-hint{position:absolute;left:50%;top:8px}
+@media (display-mode:fullscreen){#full{display:none}}
+#full{white-space:nowrap}
+
 </style>
 </head>
 <body data-machine="beige">
 <div id="world"><div id="machine">
  <section id="top"><div id="bezel"><span><i id="led"></i><span id="model">BEIGE 95</span></span><span>FOLDTOP // MINI LAB</span><span>●</span></div>
-  <div id="desk"><div id="splash"><div class="logo">▣ FOLDTOP</div><p>Three miniature computers. One very real folding screen.<br>Everything runs locally in your browser.</p><button id="power">POWER ON ↵</button></div><div id="desktop"><div id="icons"></div><div id="windows"></div></div><div id="lid-overlay"><div>◉ STANDBY / LID CLOSED</div><div class="standby-clock" id="standby-clock">--:--</div><p>Screen asleep. Computer still running.<br>Wake using the power button or keyboard.</p><button id="wake-screen">⏻ OPEN LID</button></div><div id="bar"><button id="menu">▦ Menu</button><span id="activeApp">Ready</span><span id="clock">--:--</span></div></div>
+  <div id="desk"><div id="splash"><div class="logo">▣ FOLDTOP</div><p>Three miniature computers. One very real folding screen.<br>Everything runs locally in your browser.</p><button id="power">POWER ON ↵</button></div><div id="desktop"><div id="icons"></div><div id="windows"></div></div><div id="lid-overlay"><div>◉ STANDBY / LID CLOSED</div><div class="standby-clock" id="standby-clock">--:--</div><p>Screen asleep. Computer still running.<br>Wake using the power button or keyboard.</p><button id="wake-screen">⏻ OPEN LID</button></div><div id="bar"><button id="menu">▦ Menu</button><span id="activeApp">Ready</span><span id="clock">--:--</span></div></div><div id="lid-chin"><span class="grille">⠿ ⠿ ⠿</span><span class="badge">FOLDTOP 1999 · LCD LID</span><span class="cam">◆ ● ◆</span></div>
  </section><div id="hinge"></div>
  <section id="base"><div id="base-info"><span>■ <span id="layout-note">TABLETOP KEYBOARD</span> <span id="posture-chip"></span></span><span><button id="change">◈ THEMES</button><button id="sleep-btn">⏻ LID</button><button id="layout-btn">⚙ ZONES</button><button id="full">⛶ FULL</button></span></div><div id="keyboard"></div><div id="controls"><span><i class="pip"></i>POWER</span><span class="muted">PRESS KEYS · DRAG WINDOWS · FIND SECRETS</span></div></section>
-</div><div id="selector"><h2>Choose your tiny computer</h2><p>Three vibes. None of them need a subscription.</p><div id="choices"></div><button id="dismiss">Back to computer</button></div><div id="layout-panel" role="dialog" aria-label="Fold layout settings" aria-modal="true"><div class="layout-card"><h2>FOLDTOP // SCREEN ZONES</h2><p>With a supported browser, the display and keyboard snap to the <b>actual physical screen segments</b>. If your browser only exposes one screen, calibrate the split to your crease.</p><label for="layout-mode">Arrangement</label><select id="layout-mode"><option value="auto">Auto — hardware segments / posture</option><option value="laptop">Force laptop — screen above keys</option><option value="book">Force book — screen beside keys</option></select><label for="split-range">Manual crease position: <b id="split-label">50%</b></label><input id="split-range" type="range" min="35" max="65" step="0.5" value="50"><p>Manual split is used only if there are no suitable viewport segments, or you force an arrangement.</p><div id="fold-debug"></div><p><small>Chrome 138+ supports viewport segments on compatible devices. The Device Posture API reports folded/flat; the browser does not expose an exact hinge angle. Fullscreen may give the best fit.</small></p><div class="layout-row"><button id="reset-split">Reset split</button><button id="close-layout">DONE ↵</button></div></div></div></div>
+</div><div id="selector"><h2>Choose your tiny computer</h2><p>Three vibes. None of them need a subscription.</p><div id="choices"></div><button id="dismiss">Back to computer</button></div><div id="layout-panel" role="dialog" aria-label="Fold layout settings" aria-modal="true"><div class="layout-card"><h2>FOLDTOP // SCREEN ZONES</h2><p>With a supported browser, the display and keyboard snap to the <b>actual physical screen segments</b>. If your browser only exposes one screen, calibrate the split to your crease.</p><label for="layout-mode">Arrangement</label><select id="layout-mode"><option value="auto">Auto — hardware segments / posture</option><option value="laptop">Force laptop — screen above keys</option><option value="book">Force book — screen beside keys</option></select><label for="split-range">Manual crease position: <b id="split-label">50%</b></label><input id="split-range" type="range" min="35" max="65" step="0.5" value="50"><p>Manual split is used only if there are no suitable viewport segments, or you force an arrangement.</p><div id="fold-debug"></div><p><small>Chrome 138+ supports viewport segments on compatible devices. The Device Posture API reports folded/flat; the browser does not expose an exact hinge angle. Fullscreen may give the best fit.</small></p><div class="layout-row"><button id="reset-split">Reset split</button><button id="close-layout">DONE ↵</button></div></div></div><div id="closed-cover"><div class="cover-lid"><strong>FOLDTOP</strong><span>1999 / SLEEP MODE</span></div><button id="open-cover">⏻ OPEN THE LID</button><p>Folded shut: your tiny computer is sleeping. Unfold the phone to return to the keyboard.</p></div><div id="immersive-hint" aria-live="polite">Tap anywhere to restore fullscreen ↗</div></div></div>
 <script>
 (()=>{'use strict';
 const store={getItem:k=>{try{return localStorage.getItem(k)}catch(e){return null}},setItem:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
@@ -132,7 +169,7 @@ function changeValue(input,v,c){input.value=v;input.dispatchEvent(new Event('inp
 function pick(id){machine=id;document.body.dataset.machine=id;const meta=machines.find(m=>m.id===id);$('#model').textContent=meta.model;updateLayoutNote();$('#selector').classList.remove('show');$('#windows').innerHTML='';$('#icons').innerHTML='';currentApp='';focusEl=null;$('#activeApp').textContent='Ready';if(activeSnake)activeSnake.stop();activeSnake=null;
  [['terminal','⌨️','Terminal'],['notes','📝','Notepad'],['paint','🎨','Paint'],['snake','🐍','Snake'],['files','📁','Files']].forEach(([type,icon,label])=>{const b=document.createElement('button');b.className='icon';b.innerHTML='<span class="emoji">'+icon+'</span><span>'+label+'</span>';b.onclick=()=>openApp(type);$('#icons').appendChild(b)});store.setItem('foldtop-v1-last',id);}
 function openPicker(){const c=$('#choices');c.innerHTML='';machines.forEach(m=>{const b=document.createElement('button');b.className='choice'+(machine===m.id?' selected':'');b.innerHTML='<span class="glyph">'+m.glyph+'</span><b>'+m.name+'</b><small>'+m.subtitle+'</small>';b.onclick=()=>{pick(m.id);powered=true;$('#splash').classList.add('hidden')};c.appendChild(b)});$('#selector').classList.add('show')}
-function start(){powered=true;$('#splash').classList.add('hidden');pick(store.getItem('foldtop-v1-last')||'beige');openApp('terminal')}
+function start(){document.body.dataset.started='yes';powered=true;$('#splash').classList.add('hidden');pick(store.getItem('foldtop-v1-last')||'beige');openApp('terminal')}
 function windowBox(title,type){if(activeSnake && type!=='snake'){activeSnake.stop();activeSnake=null}const win=document.createElement('div');win.className='window';win.id='w'+(++winCount);win.style.left=(8+(winCount%4)*7)+'%';win.style.top=(4+(winCount%4)*6)+'%';win.style.zIndex=++z;win.innerHTML='<div class="titlebar"><span>'+esc(title)+'</span><button aria-label="Close window">×</button></div><div class="content"></div>';win.querySelector('.titlebar button').onclick=()=>{if(type==='snake'&&activeSnake){activeSnake.stop();activeSnake=null}win.remove();if(focusEl&&!document.contains(focusEl))focusEl=null;$('#activeApp').textContent='Ready'};win.addEventListener('pointerdown',()=>{win.style.zIndex=++z;currentApp=type;$('#activeApp').textContent=title});const bar=win.querySelector('.titlebar');bar.addEventListener('pointerdown',e=>{if(e.target.tagName==='BUTTON')return;const rect=win.getBoundingClientRect(),parent=$('#desktop').getBoundingClientRect();let ox=e.clientX-rect.left,oy=e.clientY-rect.top;bar.setPointerCapture(e.pointerId);const move=ev=>{win.style.left=Math.min(Math.max(0,ev.clientX-parent.left-ox),Math.max(0,parent.width-win.offsetWidth))+'px';win.style.top=Math.min(Math.max(0,ev.clientY-parent.top-oy),Math.max(0,parent.height-win.offsetHeight))+'px'};bar.addEventListener('pointermove',move);bar.addEventListener('pointerup',()=>bar.removeEventListener('pointermove',move),{once:true});});$('#windows').appendChild(win);currentApp=type;$('#activeApp').textContent=title;return win.querySelector('.content')}
 function openApp(type){if(!powered)start();const titles={terminal:machine==='home'?'BASIC READY':'Command prompt',notes:'Notepad',paint:'Tiny Paint',snake:'SNAKE.EXE',files:'My Computer'};const area=windowBox(titles[type],type);if(type==='terminal')appTerminal(area);if(type==='notes')appNotes(area);if(type==='paint')appPaint(area);if(type==='snake')appSnake(area);if(type==='files')appFiles(area)}
 function appTerminal(area){area.style.padding='0';const root=document.createElement('div');root.className='term';root.innerHTML='<div class="history"></div><div class="entry"><span class="prompt">'+(machine==='home'?'READY.':'C:\\>')+'</span><input aria-label="Terminal command" inputmode="none" autocomplete="off" spellcheck="false" data-terminal="yes"></div>';area.appendChild(root);const history=root.querySelector('.history'),input=root.querySelector('input');history.textContent=(machine==='home'?'*** HOME 64 BASIC ***\n64K MEMORY OK\n':'Foldtop DOS 6.22\n(C) 1995 Tiny Systems\n')+'Type HELP for a list of commands.\n\n';input.addEventListener('focus',()=>{focusEl=input;currentApp='terminal'});input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submit()}});function submit(){const line=input.value.trim();input.value='';history.textContent+=(machine==='home'?'READY. ': 'C:\\>')+line+'\n';const [name,...args]=line.toLowerCase().split(/\s+/);let result='';switch(name){case'help':result='HELP   DIR   DATE   TIME   VER   ECHO   CLEAR\nABOUT  WHOAMI  SNAKE  PAINT  EDIT  MATRIX\nTRY: HELLO, SECRET, COFFEE';break;case'dir':result='Volume in drive C is FOLDTOP\n NOTES.TXT      PAINT.BMP       SNAKE.EXE\n README.TXT     SECRET.DAT';break;case'date':result=new Date().toDateString();break;case'time':result=new Date().toLocaleTimeString();break;case'ver':result='Foldtop OS 0.1 (browser edition)';break;case'echo':result=line.slice(5);break;case'clear':case'cls':history.textContent='';break;case'about':result='An original tiny foldable toy. No emulation involved.\n100% offline, zero dependencies.';break;case'whoami':result='root (of this very small computer)';break;case'snake':openApp('snake');result='Launched SNAKE.EXE';break;case'paint':openApp('paint');result='Launched PAINT.EXE';break;case'edit':case'notepad':openApp('notes');result='Launched EDIT.COM';break;case'matrix':result=Array.from({length:9},()=>Array.from({length:35},()=>Math.round(Math.random())).join('')).join('\n');break;case'hello':result='Hello, world! (But make it tiny.)';break;case'secret':result='🏅 MEDAL FOUND: command-line archaeologist';break;case'coffee':result='Error: coffee not found. Please insert beverage.';break;case'':break;default:result='Bad command or file name: '+name}if(result)history.textContent+=result+'\n';history.textContent+='\n';history.scrollTop=history.scrollHeight}
@@ -148,7 +185,38 @@ function appSnake(area){area.style.padding='0';area.innerHTML='<div class="snake
  function restart(){if(timer)clearInterval(timer);snake=[{x:5,y:5},{x:4,y:5},{x:3,y:5}];dir={x:1,y:0};nextDir={...dir};scoreN=0;score.textContent='SCORE: 0';food=fruit();redraw();started=true;paused=false;area.querySelector('.hint').textContent='ARROWS TO MOVE · SPACE TO PAUSE';timer=setInterval(tick,140)}
  function direction(k){const target={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}}[k];if(!target||target.x===-dir.x&&target.y===-dir.y)return;nextDir=target}activeSnake={direction,restart,togglePause:()=>{paused=!paused;area.querySelector('.hint').textContent=paused?'PAUSED — SPACE TO RESUME':'ARROWS TO MOVE · SPACE TO PAUSE'},stop:()=>{if(timer)clearInterval(timer);timer=null}};area.querySelector('button').onclick=restart;restart()}
 window.addEventListener('keydown',e=>{if(activeSnake&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();activeSnake.direction(e.key)}if(activeSnake&&e.key===' '&&e.target.tagName!=='TEXTAREA'){e.preventDefault();activeSnake.togglePause()}});
-$('#menu').onclick=openPicker;$('#change').onclick=openPicker;$('#dismiss').onclick=()=>$('#selector').classList.remove('show');$('#power').onclick=start;$('#full').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){alert('Fullscreen not allowed here. Try opening the file as a web page.')}};
+$('#menu').onclick=openPicker;$('#change').onclick=openPicker;$('#dismiss').onclick=()=>$('#selector').classList.remove('show');$('#power').onclick=start;// Enter immersion after a gesture; browsers forbid fullscreen on page load.
+let wantsImmersive=store.getItem('foldtop-immersive')!=='off';
+const isImmersive=()=>!!document.fullscreenElement||matchMedia('(display-mode: fullscreen)').matches;
+let immersiveAttempt=false;
+async function tryOrientationLock(){
+ if(!isImmersive() || !screen.orientation?.lock)return;
+ try{await screen.orientation.lock('landscape')}catch(e){}
+}
+async function enterImmersive(){
+ if(isImmersive() || immersiveAttempt || !wantsImmersive || !document.documentElement.requestFullscreen)return;
+ immersiveAttempt=true;
+ try{
+  await document.documentElement.requestFullscreen({navigationUI:'hide'});
+  $('#immersive-hint').classList.remove('show');
+  await tryOrientationLock();
+ }catch(e){}finally{immersiveAttempt=false;queueLayoutUpdate()}
+}
+function updateImmersiveControls(){
+ const active=isImmersive();
+ $('#full').textContent=active?'⛶ EXIT':'⛶ FULL';
+ $('#immersive-hint').classList.toggle('show',wantsImmersive&&!active&&document.body.dataset.started==='yes');
+ queueLayoutUpdate();
+}
+$('#full').addEventListener('click',async e=>{
+ e.stopPropagation();
+ if(document.fullscreenElement){wantsImmersive=false;store.setItem('foldtop-immersive','off');try{await document.exitFullscreen()}catch(e){}}
+ else{wantsImmersive=true;store.setItem('foldtop-immersive','on');await enterImmersive()}
+ updateImmersiveControls();
+});
+// Capture works on POWER ON and any other tap, without changing their behavior.
+document.addEventListener('click',e=>{if(!e.target.closest('#full'))enterImmersive()},{capture:true});
+document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement)tryOrientationLock();updateImmersiveControls()});
 function updateClock(){const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});$('#clock').textContent=time;$('#standby-clock').textContent=time}updateClock();setInterval(updateClock,30_000);renderKeyboard();
 
 // Hardware-aware layout. When available, the DOMRect values are used exactly;
@@ -157,7 +225,7 @@ let layoutOverride=store.getItem('foldtop-v2-layout')||'auto';
 let splitPercent=Number(store.getItem('foldtop-v2-split')||50);
 if(!['auto','laptop','book'].includes(layoutOverride))layoutOverride='auto';
 if(!Number.isFinite(splitPercent)||splitPercent<35||splitPercent>65)splitPercent=50;
-let lastPosture=null,hasHardwareZones=false,lidSleeping=false;
+let lastPosture=null,hasHardwareZones=false,lidSleeping=false,coverDismissed=false,previousOuter=false;
 const panels=['#top','#hinge','#base'].map($);
 function getPosture(){
  try{return navigator.devicePosture?.type || (matchMedia('(device-posture: folded)').matches?'folded':'unavailable')}
@@ -180,8 +248,21 @@ function renderFoldDiagnostics(posture,zones,layout,hw){
  $('#split-range').disabled=hw;
  $('#split-range').title=hw?'Not needed: using exact hardware boundaries.':'Adjust to match the physical crease.';
 }
+function shouldShowClosedCover(){
+ // Narrow cover display; the almost-square unfolded display is not a cover.
+ const w=screen.width||window.innerWidth,h=screen.height||window.innerHeight;
+ return matchMedia('(pointer:coarse)').matches && Math.min(w,h)<650 && Math.min(w,h)/Math.max(w,h)<.73;
+}
 function updateFoldLayout(){
- const posture=getPosture(), zones=getZones();
+ const posture=getPosture();
+ // When browser doesn't honor a landscape lock, rotate the entire application.
+ const rotate=window.innerHeight>window.innerWidth*1.05;
+ document.body.dataset.uiRotated=rotate?'yes':'no';
+ const physicalZones=getZones();
+ const zones=rotate?physicalZones.map(r=>({x:r.y,y:window.innerWidth-(r.x+r.width),width:r.height,height:r.width})):physicalZones;
+ const outer=shouldShowClosedCover();
+ if(outer!==previousOuter){coverDismissed=false;previousOuter=outer}
+ $('#closed-cover').classList.toggle('show',outer&&!coverDismissed);
  const ordered=zones.length>=2?zones.slice().sort((a,b)=>(a.y-b.y)||(a.x-b.x)):[];
  let geometry=null;
  if(ordered.length>=2){
@@ -193,7 +274,7 @@ function updateFoldLayout(){
   else if(hb.x >= ha.x+ha.width-2 && Math.abs(ha.y-hb.y)<Math.max(ha.height,hb.height)*.6)
    geometry={layout:'book',a:ha,b:hb};
  }
- const fallback=posture==='folded' && matchMedia('(orientation: portrait)').matches?'book':'laptop';
+ const fallback='laptop';
  const layout=layoutOverride==='auto'?(geometry?.layout||fallback):layoutOverride;
  const useHw=layoutOverride==='auto'&&!!geometry;
  hasHardwareZones=useHw;
@@ -227,6 +308,7 @@ function setLidSleeping(sleep){
 }
 $('#sleep-btn').onclick=()=>setLidSleeping(!lidSleeping);
 $('#wake-screen').onclick=()=>setLidSleeping(false);
+$('#open-cover').onclick=()=>{coverDismissed=true;$('#closed-cover').classList.remove('show');setLidSleeping(false)};
 $('#keyboard').addEventListener('click',()=>{if(lidSleeping)setLidSleeping(false)},true);
 $('#layout-btn').onclick=()=>{$('#layout-mode').value=layoutOverride;$('#split-range').value=splitPercent;$('#split-label').textContent=splitPercent+'%';$('#layout-panel').classList.add('show');updateFoldLayout()};
 $('#close-layout').onclick=()=>$('#layout-panel').classList.remove('show');
@@ -238,7 +320,7 @@ let updateQueued=false;
 function queueLayoutUpdate(){if(updateQueued)return;updateQueued=true;requestAnimationFrame(()=>{updateQueued=false;updateFoldLayout()})}
 window.addEventListener('resize',queueLayoutUpdate);
 window.visualViewport?.addEventListener('resize',queueLayoutUpdate);
-window.screen?.orientation?.addEventListener('change',queueLayoutUpdate);
+window.screen?.orientation?.addEventListener('change',()=>{queueLayoutUpdate();if(isImmersive())tryOrientationLock()});
 try{navigator.devicePosture?.addEventListener('change',queueLayoutUpdate)}catch(e){}
 // Closing the physical device usually hides the browser rather than exposing
 // a reliable '0-degree hinge' event. Treat that as an automatic lid suspend,
@@ -253,6 +335,10 @@ document.addEventListener('visibilitychange',()=>{
  }
 });
 updateFoldLayout();
+updateImmersiveControls();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
 })();
 </script>
 </body></html>
